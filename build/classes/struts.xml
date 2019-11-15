@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 将action创建交给spring -->
+	<constant name="struts.objectFactory" value="spring"></constant>
+	<!-- 配置国际化 -->
+	<constant name="struts.custom.i18n.resources" value="cn.utils.message"></constant>
+	 <constant name="struts.multipart.maxSize" value="10485760"></constant> 
+	<package name="login" namespace="/" extends="struts-default">
+		<interceptors>
+		<!-- 注册拦截器 -->
+		<interceptor name="myInter" class="cn.web.inter.SelectInterceptor"></interceptor>
+		<!-- 注册拦截器栈 -->
+		
+		<interceptor-stack name="myStack">
+		<interceptor-ref name="fileUpload">
+			<param name="maximumSize">3145728</param>
+		</interceptor-ref>
+		<interceptor-ref name="myInter">
+			<param name="excludeMethods">login,register,changeLanguage</param>
+		</interceptor-ref>
+		<interceptor-ref name="defaultStack">
+		<!-- 设置允许上传的文件类型 -->
+		<param name="fileUpload.allowedTypes">image/*</param>
+		
+		<!-- 设置允许上传的文件后缀名
+		<param name="fileUpload.allowedExtensions">.jpg,.png</param>
+		 -->
+		</interceptor-ref>
+		</interceptor-stack>
+		</interceptors>
+		
+		<!-- 指定该包的默认拦截器栈 -->
+		<default-interceptor-ref name="myStack"></default-interceptor-ref>
+		<!-- 定义全局结果集 -->
+		<global-results>
+			<result name="toRegister">/register.jsp</result>
+			<result name="login">/login.jsp</result>
+		</global-results>
+		
+		<action name="UserAction_*" class="userAction" method="{1}">
+			<result name="download" type="stream">
+				<!-- 配置输出流 -->
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename=${fileName}</param>
+				<param name="contentType">application/octet-stream</param>
+			</result>
+			<result name="loginSuccess">/welcome.html</result>
+			<result name="loginLose" >/login.jsp</result>
+			<result name="changeSuccess" >/login.jsp</result>
+			<result name="registerSuccess">/login.jsp</result>
+			<result name="registerLose">/register.jsp</result>
+			<result name="input">/{1}.jsp</result>
+			<result name="selectAllSuccess">/funtionJSP/selectAll.jsp</result>
+			<result name="seleteAllLose">/welcome.html</result>
+			<result name="update">/funtionJSP/tip.jsp</result>
+			<result name="delete">/funtionJSP/tip.jsp</result>
+		</action>
+		
+	</package>
+</struts>
